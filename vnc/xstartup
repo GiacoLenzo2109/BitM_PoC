@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Start the desktop environment
+xrdb $HOME/.Xresources
+
+xsetroot -solid black
+
+startxfce4 &
+
+sleep 5
+
+# Start the Midori browser
+midori -e fullscreen https://accounts.google.com/signin &

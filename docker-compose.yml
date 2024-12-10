@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  vnc:
+    build:
+      context: ./vnc
+    ports:
+      - "5901:5901"
+    environment:
+      - RESOLUTION=1920x1080
+      - USER=root
+      - DEBIAN_FRONTEND=noninteractive
+    volumes:
+      - ./vnc/xstartup:/root/.vnc/xstartup
+      - ./vnc/start-vnc.sh:/app/start-vnc.sh
+    command: ["/app/start-vnc.sh"]
+    networks:
+      - vnc-network
+
+  novnc:
+    build:
+      context: ./webserver
+    ports:
+      - "6080:6080"
+    environment:
+      - USER=root
+      - DEBIAN_FRONTEND=noninteractive
+    networks:
+      - vnc-network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./webserver/index.html:/usr/share/nginx/html/index.html
+      - ./webserver/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    networks:
+      - vnc-network
+
+networks:
+  vnc-network:
+    driver: bridge
